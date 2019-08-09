@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pycbc.strain.strain &mdash; PyCBC d4c615 documentation</title>
+  <title>pycbc.strain.strain &mdash; PyCBC ff83c8 documentation</title>
   
 
   
@@ -1404,9 +1404,10 @@
                  <span class="n">psd_inverse_length</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span>
                  <span class="n">trim_padding</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
                  <span class="n">autogating_threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">autogating_cluster</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
-                 <span class="n">autogating_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-                 <span class="n">autogating_pad</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+                 <span class="n">autogating_cluster</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">autogating_pad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">autogating_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">autogating_taper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">state_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">data_quality_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">dyn_range_fac</span><span class="o">=</span><span class="n">pycbc</span><span class="o">.</span><span class="n">DYN_RANGE_FAC</span><span class="p">,</span>
@@ -1450,14 +1451,17 @@
 <span class="sd">        trim_padding: {float, 0.25}, Optional</span>
 <span class="sd">            Amount of padding in seconds to give for truncated the overwhitened</span>
 <span class="sd">            data stream.</span>
-<span class="sd">        autogating_threshold: {float, None}, Optional</span>
-<span class="sd">            Sigma deviation required to cause gating of data</span>
-<span class="sd">        autogating_cluster: {float, 0.25}, Optional</span>
-<span class="sd">            Seconds to cluster possible gating locations</span>
-<span class="sd">        autogating_window: {float, 0.5}, Optional</span>
-<span class="sd">            Seconds to window out when gating a time</span>
-<span class="sd">        autogating_pad: {float, 0.25}, Optional</span>
-<span class="sd">            Seconds to pad either side of the gating window.</span>
+<span class="sd">        autogating_threshold: float, Optional</span>
+<span class="sd">            Sigma deviation required to cause autogating of data.</span>
+<span class="sd">            If None, no autogating is performed.</span>
+<span class="sd">        autogating_cluster: float, Optional</span>
+<span class="sd">            Seconds to cluster possible gating locations.</span>
+<span class="sd">        autogating_pad: float, Optional</span>
+<span class="sd">            Seconds of corrupted whitened strain to ignore when generating a gate.</span>
+<span class="sd">        autogating_width: float, Optional</span>
+<span class="sd">            Half-duration of the zeroed-out portion of autogates.</span>
+<span class="sd">        autogating_taper: float, Optional</span>
+<span class="sd">            Duration of taper on either side of the gating window in seconds.</span>
 <span class="sd">        state_channel: {str, None}, Optional</span>
 <span class="sd">            Channel to use for state information about the strain</span>
 <span class="sd">        data_quality_channel: {str, None}, Optional</span>
@@ -1538,7 +1542,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">autogating_threshold</span> <span class="o">=</span> <span class="n">autogating_threshold</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">autogating_cluster</span> <span class="o">=</span> <span class="n">autogating_cluster</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">autogating_pad</span> <span class="o">=</span> <span class="n">autogating_pad</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">autogating_window</span> <span class="o">=</span> <span class="n">autogating_window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">autogating_width</span> <span class="o">=</span> <span class="n">autogating_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">autogating_taper</span> <span class="o">=</span> <span class="n">autogating_taper</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="n">sample_rate</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dyn_range_fac</span> <span class="o">=</span> <span class="n">dyn_range_fac</span>
@@ -1803,7 +1808,8 @@
         <span class="c1"># taper beginning if needed</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">taper_immediate_strain</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Tapering start of </span><span class="si">%s</span><span class="s2"> strain block&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">detector</span><span class="p">)</span>
-            <span class="n">strain</span> <span class="o">=</span> <span class="n">gate_data</span><span class="p">(</span><span class="n">strain</span><span class="p">,</span> <span class="p">[(</span><span class="n">strain</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">autogating_pad</span><span class="p">)])</span>
+            <span class="n">strain</span> <span class="o">=</span> <span class="n">gate_data</span><span class="p">(</span>
+                    <span class="n">strain</span><span class="p">,</span> <span class="p">[(</span><span class="n">strain</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">autogating_taper</span><span class="p">)])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">taper_immediate_strain</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># Stitch into continuous stream</span>
@@ -1812,6 +1818,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">strain</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+=</span> <span class="n">blocksize</span>
 
         <span class="c1"># apply gating if needed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gate_params</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">autogating_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">glitch_times</span> <span class="o">=</span> <span class="n">detect_loud_glitches</span><span class="p">(</span>
                     <span class="n">strain</span><span class="p">[:</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">corruption</span><span class="p">],</span>
@@ -1819,21 +1826,19 @@
                     <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">autogating_threshold</span><span class="p">,</span>
                     <span class="n">cluster_window</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">autogating_cluster</span><span class="p">,</span>
                     <span class="n">low_freq_cutoff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">highpass_frequency</span><span class="p">,</span>
-                    <span class="n">corrupt_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">autogating_window</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">autogating_pad</span><span class="p">)</span>
+                    <span class="n">corrupt_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">autogating_pad</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">glitch_times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Autogating </span><span class="si">%s</span><span class="s1"> at </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">detector</span><span class="p">,</span>
                              <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">gt</span> <span class="k">for</span> <span class="n">gt</span> <span class="ow">in</span> <span class="n">glitch_times</span><span class="p">]))</span>
-                <span class="n">gate_params</span> <span class="o">=</span> <span class="p">[[</span><span class="n">gt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">autogating_window</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">autogating_pad</span><span class="p">]</span> \
-                               <span class="k">for</span> <span class="n">gt</span> <span class="ow">in</span> <span class="n">glitch_times</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">strain</span> <span class="o">=</span> <span class="n">gate_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strain</span><span class="p">,</span> <span class="n">gate_params</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gate_params</span> <span class="o">=</span> \
+                        <span class="p">[(</span><span class="n">gt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">autogating_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">autogating_taper</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">gt</span> <span class="ow">in</span> <span class="n">glitch_times</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">strain</span> <span class="o">=</span> <span class="n">gate_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strain</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gate_params</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">psd</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_duration</span> <span class="o">&lt;=</span><span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">recalculate_psd</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_duration</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_duration</span> <span class="o">&lt;=</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="StrainBuffer.from_cli"><a class="viewcode-back" href="../../../pycbc.strain.html#pycbc.strain.strain.StrainBuffer.from_cli">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_cli</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ifo</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">maxlen</span><span class="p">):</span>
@@ -1875,8 +1880,9 @@
                    <span class="n">psd_inverse_length</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">psd_inverse_length</span><span class="p">,</span>
                    <span class="n">autogating_threshold</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">autogating_threshold</span><span class="p">,</span>
                    <span class="n">autogating_cluster</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">autogating_cluster</span><span class="p">,</span>
-                   <span class="n">autogating_window</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">autogating_window</span><span class="p">,</span>
                    <span class="n">autogating_pad</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">autogating_pad</span><span class="p">,</span>
+                   <span class="n">autogating_width</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">autogating_width</span><span class="p">,</span>
+                   <span class="n">autogating_taper</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">autogating_taper</span><span class="p">,</span>
                    <span class="n">psd_abort_difference</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">psd_abort_difference</span><span class="p">,</span>
                    <span class="n">psd_recalculate_difference</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">psd_recalculate_difference</span><span class="p">,</span>
                    <span class="n">force_update_cache</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">force_update_cache</span><span class="p">,</span>
@@ -1898,7 +1904,7 @@
     <p>
         &copy; Copyright 2015, 2016, 2017, Alexander Nitz, Ian Harry, Christopher M. Biwer, Duncan A.  Brown, Josh Willis, and Tito Dal Canton
       <span class="lastupdated">
-        Last updated on Aug 04, 2019.
+        Last updated on Aug 09, 2019.
       </span>
 
     </p>
