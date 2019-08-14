@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pycbc.strain.strain &mdash; PyCBC 5b00ab documentation</title>
+  <title>pycbc.strain.strain &mdash; PyCBC 4c0acd documentation</title>
   
 
   
@@ -1544,6 +1544,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">autogating_pad</span> <span class="o">=</span> <span class="n">autogating_pad</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">autogating_width</span> <span class="o">=</span> <span class="n">autogating_width</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">autogating_taper</span> <span class="o">=</span> <span class="n">autogating_taper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gate_params</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="n">sample_rate</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dyn_range_fac</span> <span class="o">=</span> <span class="n">dyn_range_fac</span>
@@ -1755,6 +1756,8 @@
         <span class="n">ts</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">StrainBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">attempt_advance</span><span class="p">(</span><span class="n">blocksize</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">blocksize</span> <span class="o">=</span> <span class="n">blocksize</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">gate_params</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="c1"># We have given up so there is no time series</span>
         <span class="k">if</span> <span class="n">ts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> frame is late, giving up&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">detector</span><span class="p">)</span>
@@ -1818,7 +1821,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">strain</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+=</span> <span class="n">blocksize</span>
 
         <span class="c1"># apply gating if needed</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gate_params</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">autogating_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">glitch_times</span> <span class="o">=</span> <span class="n">detect_loud_glitches</span><span class="p">(</span>
                     <span class="n">strain</span><span class="p">[:</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">corruption</span><span class="p">],</span>
