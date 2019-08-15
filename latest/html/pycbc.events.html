@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pycbc.events package &mdash; PyCBC 1.14.dev2 documentation</title>
+  <title>pycbc.events package &mdash; PyCBC 91ce41 documentation</title>
   
 
   
@@ -62,6 +62,10 @@
 
           
             
+            
+              <div class="version">
+                None
+              </div>
             
           
 
@@ -260,7 +264,7 @@
 coincident triggers.</p>
 <dl class="class">
 <dt id="pycbc.events.coinc.CoincExpireBuffer">
-<em class="property">class </em><code class="descclassname">pycbc.events.coinc.</code><code class="descname">CoincExpireBuffer</code><span class="sig-paren">(</span><em>expiration</em>, <em>ifos</em>, <em>initial_size=1048576</em>, <em>dtype=&lt;class 'numpy.float32'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/coinc.html#CoincExpireBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.coinc.CoincExpireBuffer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.coinc.</code><code class="descname">CoincExpireBuffer</code><span class="sig-paren">(</span><em>expiration</em>, <em>ifos</em>, <em>initial_size=1048576</em>, <em>dtype=&lt;type 'numpy.float32'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/coinc.html#CoincExpireBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.coinc.CoincExpireBuffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Unordered dynamic sized buffer that handles
 multiple expiration vectors.</p>
@@ -1246,7 +1250,7 @@ variation statistic</p>
 
 <dl class="class">
 <dt id="pycbc.events.simd_threshold.ThreshClusterObject">
-<em class="property">class </em><code class="descclassname">pycbc.events.simd_threshold.</code><code class="descname">ThreshClusterObject</code><span class="sig-paren">(</span><em>series</em>, <em>window</em>, <em>segsize=32768.0</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/simd_threshold.html#ThreshClusterObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.simd_threshold.ThreshClusterObject" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.simd_threshold.</code><code class="descname">ThreshClusterObject</code><span class="sig-paren">(</span><em>series</em>, <em>window</em>, <em>segsize=32768</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/simd_threshold.html#ThreshClusterObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.simd_threshold.ThreshClusterObject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>This class takes a complex SNR time series, a real threshold value, and a window size
 (expressed as a number of complex sample points), and optionally a segment size and
@@ -1304,11 +1308,11 @@ the current data.</p>
 </div>
 <div class="section" id="module-pycbc.events.stat">
 <span id="pycbc-events-stat-module"></span><h2>pycbc.events.stat module<a class="headerlink" href="#module-pycbc.events.stat" title="Permalink to this headline">¶</a></h2>
-<p>This module contains functions for calculating coincident ranking
-statistic values</p>
+<p>This module contains functions for calculating coincident ranking statistic
+values.</p>
 <dl class="class">
 <dt id="pycbc.events.stat.ExpFitCombinedSNR">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">ExpFitCombinedSNR</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitCombinedSNR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitCombinedSNR" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">ExpFitCombinedSNR</code><span class="sig-paren">(</span><em>files</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitCombinedSNR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitCombinedSNR" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.ExpFitStatistic" title="pycbc.events.stat.ExpFitStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.ExpFitStatistic</span></code></a></p>
 <p>Reworking of ExpFitStatistic designed to resemble network SNR</p>
 <p>Use a monotonic function of the negative log noise rate density which
@@ -1321,21 +1325,26 @@ approximates combined (new)snr for coincs with similar newsnr in each ifo</p>
 
 <dl class="method">
 <dt id="pycbc.events.stat.ExpFitCombinedSNR.coinc_multiifo">
-<code class="descname">coinc_multiifo</code><span class="sig-paren">(</span><em>s</em>, <em>slide</em>, <em>step</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitCombinedSNR.coinc_multiifo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitCombinedSNR.coinc_multiifo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the coincident detection statistic.
-:param s: statistics
-:type s: dictionary keyed by ifo of single detector ranking
-:param slide:
-:type slide: (unused in this statistic)
-:param step:
-:type step: (unused in this statistic)</p>
+<code class="descname">coinc_multiifo</code><span class="sig-paren">(</span><em>s</em>, <em>slide</em>, <em>step</em>, <em>to_shift</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitCombinedSNR.coinc_multiifo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitCombinedSNR.coinc_multiifo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the coincident detection statistic.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array of coincident ranking statistic values</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of (ifo, single detector statistic) tuples</li>
+<li><strong>slide</strong> (<em>(</em><em>unused in this statistic</em><em>)</em>) – </li>
+<li><strong>step</strong> (<em>(</em><em>unused in this statistic</em><em>)</em>) – </li>
+<li><strong>to_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of integers indicating what multiples of the time shift will</li>
+<li><strong>applied</strong><strong> (</strong><strong>unused in this statistic</strong><strong>)</strong> (<em>be</em>) – </li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Array of coincident ranking statistic values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1356,28 +1365,33 @@ approximates combined (new)snr for coincs with similar newsnr in each ifo</p>
 
 <dl class="class">
 <dt id="pycbc.events.stat.ExpFitSGBgRateStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">ExpFitSGBgRateStatistic</code><span class="sig-paren">(</span><em>files</em>, <em>benchmark_lograte=-14.6</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitSGBgRateStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitSGBgRateStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">ExpFitSGBgRateStatistic</code><span class="sig-paren">(</span><em>files</em>, <em>ifos=None</em>, <em>benchmark_lograte=-14.6</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitSGBgRateStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitSGBgRateStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.ExpFitStatistic" title="pycbc.events.stat.ExpFitStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.ExpFitStatistic</span></code></a></p>
-<p>Detection statistic using an exponential falloff noise model.
-Statistic calculates the log noise coinc rate for each
+<p>Detection statistic using an exponential falloff noise model.</p>
+<p>Statistic calculates the log noise coinc rate for each
 template over single-ifo newsnr values.</p>
 <dl class="method">
 <dt id="pycbc.events.stat.ExpFitSGBgRateStatistic.coinc_multiifo">
-<code class="descname">coinc_multiifo</code><span class="sig-paren">(</span><em>s</em>, <em>slide</em>, <em>step</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitSGBgRateStatistic.coinc_multiifo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitSGBgRateStatistic.coinc_multiifo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the coincident detection statistic.
-:param s: statistics
-:type s: dictionary keyed by ifo of single detector ranking
-:param slide:
-:type slide: (unused in this statistic)
-:param step:
-:type step: (unused in this statistic)</p>
+<code class="descname">coinc_multiifo</code><span class="sig-paren">(</span><em>s</em>, <em>slide</em>, <em>step</em>, <em>to_shift</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitSGBgRateStatistic.coinc_multiifo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitSGBgRateStatistic.coinc_multiifo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the coincident detection statistic.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array of coincident ranking statistic values</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of (ifo, single detector statistic) tuples</li>
+<li><strong>slide</strong> (<em>(</em><em>unused in this statistic</em><em>)</em>) – </li>
+<li><strong>step</strong> (<em>(</em><em>unused in this statistic</em><em>)</em>) – </li>
+<li><strong>to_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of integers indicating what multiples of the time shift will</li>
+<li><strong>applied</strong><strong> (</strong><strong>unused in this statistic</strong><strong>)</strong> (<em>be</em>) – </li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Array of coincident ranking statistic values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1392,15 +1406,15 @@ template over single-ifo newsnr values.</p>
 
 <dl class="class">
 <dt id="pycbc.events.stat.ExpFitSGCombinedSNR">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">ExpFitSGCombinedSNR</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitSGCombinedSNR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitSGCombinedSNR" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">ExpFitSGCombinedSNR</code><span class="sig-paren">(</span><em>files</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitSGCombinedSNR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitSGCombinedSNR" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.ExpFitCombinedSNR" title="pycbc.events.stat.ExpFitCombinedSNR"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.ExpFitCombinedSNR</span></code></a></p>
-<p>ExpFitCombinedSNR but with sine-Gaussian veto added to the</p>
-<p>single detector ranking</p>
+<p>ExpFitCombinedSNR but with sine-Gaussian veto added to the single</p>
+<p>detector ranking</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pycbc.events.stat.ExpFitSGFgBgRateStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">ExpFitSGFgBgRateStatistic</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitSGFgBgRateStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitSGFgBgRateStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">ExpFitSGFgBgRateStatistic</code><span class="sig-paren">(</span><em>files</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitSGFgBgRateStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitSGFgBgRateStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.PhaseTDStatistic" title="pycbc.events.stat.PhaseTDStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.PhaseTDStatistic</span></code></a>, <a class="reference internal" href="#pycbc.events.stat.ExpFitSGBgRateStatistic" title="pycbc.events.stat.ExpFitSGBgRateStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.ExpFitSGBgRateStatistic</span></code></a></p>
 <dl class="method">
 <dt id="pycbc.events.stat.ExpFitSGFgBgRateStatistic.assign_median_sigma">
@@ -1409,21 +1423,26 @@ template over single-ifo newsnr values.</p>
 
 <dl class="method">
 <dt id="pycbc.events.stat.ExpFitSGFgBgRateStatistic.coinc_multiifo">
-<code class="descname">coinc_multiifo</code><span class="sig-paren">(</span><em>s</em>, <em>slide</em>, <em>step</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitSGFgBgRateStatistic.coinc_multiifo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitSGFgBgRateStatistic.coinc_multiifo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the coincident detection statistic.
-:param s: statistics
-:type s: dictionary keyed by ifo of single detector ranking
-:param slide:
-:type slide: (unused in this statistic)
-:param step:
-:type step: (unused in this statistic)</p>
+<code class="descname">coinc_multiifo</code><span class="sig-paren">(</span><em>s</em>, <em>slide</em>, <em>step</em>, <em>to_shift</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitSGFgBgRateStatistic.coinc_multiifo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitSGFgBgRateStatistic.coinc_multiifo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the coincident detection statistic.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array of coincident ranking statistic values</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of (ifo, single detector statistic) tuples</li>
+<li><strong>slide</strong> (<em>(</em><em>unused in this statistic</em><em>)</em>) – </li>
+<li><strong>step</strong> (<em>(</em><em>unused in this statistic</em><em>)</em>) – </li>
+<li><strong>to_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of integers indicating what multiples of the time shift will</li>
+<li><strong>applied</strong><strong> (</strong><strong>unused in this statistic</strong><strong>)</strong> (<em>be</em>) – </li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Array of coincident ranking statistic values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1432,18 +1451,22 @@ template over single-ifo newsnr values.</p>
 <dl class="method">
 <dt id="pycbc.events.stat.ExpFitSGFgBgRateStatistic.single">
 <code class="descname">single</code><span class="sig-paren">(</span><em>trigs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitSGFgBgRateStatistic.single"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitSGFgBgRateStatistic.single" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the single detector statistic and assemble other parameters</p>
+<dd><p>Calculate the single detector statistic &amp; assemble other parameters</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>trigs</strong> (<em>dict of numpy.ndarrays</em><em>, </em><em>h5py group</em><em> (or </em><em>similar dict-like object</em><em>)</em>) – Dictionary-like object holding single detector trigger information.
-‘chisq_dof’, ‘snr’, ‘chisq’, ‘coa_phase’, ‘end_time’, and ‘sigmasq’
-are required keys.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>trigs</strong> (<em>dict of numpy.ndarrays</em><em>, </em><em>h5py group</em><em> or </em><em>similar dict-like object</em>) – Object holding single detector trigger information. ‘snr’, ‘chisq’,</li>
+<li><strong>'coa_phase'</strong><strong>, </strong><strong>'end_time'</strong><strong>, </strong><strong>and 'sigmasq' are required keys.</strong> (<em>'chisq_dof'</em><em>,</em>) – </li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Array of single detector parameter values</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Array of single detector parameter values</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1453,7 +1476,7 @@ are required keys.</td>
 
 <dl class="class">
 <dt id="pycbc.events.stat.ExpFitSGPSDCombinedSNR">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">ExpFitSGPSDCombinedSNR</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitSGPSDCombinedSNR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitSGPSDCombinedSNR" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">ExpFitSGPSDCombinedSNR</code><span class="sig-paren">(</span><em>files</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitSGPSDCombinedSNR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitSGPSDCombinedSNR" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.ExpFitCombinedSNR" title="pycbc.events.stat.ExpFitCombinedSNR"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.ExpFitCombinedSNR</span></code></a></p>
 <p>ExpFitCombinedSNR but with sine-Gaussian veto and PSD variation added to</p>
 <p>the single detector ranking</p>
@@ -1461,7 +1484,7 @@ are required keys.</td>
 
 <dl class="class">
 <dt id="pycbc.events.stat.ExpFitStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">ExpFitStatistic</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">ExpFitStatistic</code><span class="sig-paren">(</span><em>files</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#ExpFitStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.ExpFitStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.NewSNRStatistic" title="pycbc.events.stat.NewSNRStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.NewSNRStatistic</span></code></a></p>
 <p>Detection statistic using an exponential falloff noise model.</p>
 <p>Statistic approximates the negative log noise coinc rate density per
@@ -1506,7 +1529,7 @@ and rescale by the fitted coefficients alpha and rate</p>
 
 <dl class="class">
 <dt id="pycbc.events.stat.MaxContTradNewSNRStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">MaxContTradNewSNRStatistic</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#MaxContTradNewSNRStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.MaxContTradNewSNRStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">MaxContTradNewSNRStatistic</code><span class="sig-paren">(</span><em>files=None</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#MaxContTradNewSNRStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.MaxContTradNewSNRStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.NewSNRStatistic" title="pycbc.events.stat.NewSNRStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.NewSNRStatistic</span></code></a></p>
 <p>Combination of NewSNR with the power chisq and auto chisq</p>
 <dl class="method">
@@ -1533,7 +1556,7 @@ are required keys for this statistic.</td>
 
 <dl class="class">
 <dt id="pycbc.events.stat.NetworkSNRStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">NetworkSNRStatistic</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#NetworkSNRStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.NetworkSNRStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">NetworkSNRStatistic</code><span class="sig-paren">(</span><em>files=None</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#NetworkSNRStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.NetworkSNRStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.NewSNRStatistic" title="pycbc.events.stat.NewSNRStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.NewSNRStatistic</span></code></a></p>
 <p>Same as the NewSNR statistic, but just sum of squares of SNRs</p>
 <dl class="method">
@@ -1558,7 +1581,7 @@ are required keys for this statistic.</td>
 
 <dl class="class">
 <dt id="pycbc.events.stat.NewSNRCutStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">NewSNRCutStatistic</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#NewSNRCutStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.NewSNRCutStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">NewSNRCutStatistic</code><span class="sig-paren">(</span><em>files=None</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#NewSNRCutStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.NewSNRCutStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.NewSNRStatistic" title="pycbc.events.stat.NewSNRStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.NewSNRStatistic</span></code></a></p>
 <p>Same as the NewSNR statistic, but demonstrates a cut of the triggers</p>
 <dl class="method">
@@ -1609,16 +1632,14 @@ are required keys for this statistic.</td>
 
 <dl class="class">
 <dt id="pycbc.events.stat.NewSNRSGPSDStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">NewSNRSGPSDStatistic</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#NewSNRSGPSDStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.NewSNRSGPSDStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">NewSNRSGPSDStatistic</code><span class="sig-paren">(</span><em>files=None</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#NewSNRSGPSDStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.NewSNRSGPSDStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.NewSNRSGStatistic" title="pycbc.events.stat.NewSNRSGStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.NewSNRSGStatistic</span></code></a></p>
 <p>Calculate the NewSNRSGPSD coincident detection statistic</p>
 <dl class="method">
 <dt id="pycbc.events.stat.NewSNRSGPSDStatistic.single">
 <code class="descname">single</code><span class="sig-paren">(</span><em>trigs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#NewSNRSGPSDStatistic.single"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.NewSNRSGPSDStatistic.single" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Calculate the single detector statistic, here equal to newsnr</dt>
-<dd>combined with sgveto and psdvar statistic</dd>
-</dl>
+<dd><p>Calculate the single detector statistic, here equal to newsnr
+combined with sgveto and psdvar statistic</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1637,7 +1658,7 @@ are required keys for this statistic.</td>
 
 <dl class="class">
 <dt id="pycbc.events.stat.NewSNRSGStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">NewSNRSGStatistic</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#NewSNRSGStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.NewSNRSGStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">NewSNRSGStatistic</code><span class="sig-paren">(</span><em>files=None</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#NewSNRSGStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.NewSNRSGStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.NewSNRStatistic" title="pycbc.events.stat.NewSNRStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.NewSNRStatistic</span></code></a></p>
 <p>Calculate the NewSNRSG coincident detection statistic</p>
 <dl class="method">
@@ -1662,7 +1683,7 @@ are required keys for this statistic.</td>
 
 <dl class="class">
 <dt id="pycbc.events.stat.NewSNRStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">NewSNRStatistic</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#NewSNRStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.NewSNRStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">NewSNRStatistic</code><span class="sig-paren">(</span><em>files=None</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#NewSNRStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.NewSNRStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.Stat" title="pycbc.events.stat.Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.Stat</span></code></a></p>
 <p>Calculate the NewSNR coincident detection statistic</p>
 <dl class="method">
@@ -1693,21 +1714,26 @@ are required keys for this statistic.</td>
 
 <dl class="method">
 <dt id="pycbc.events.stat.NewSNRStatistic.coinc_multiifo">
-<code class="descname">coinc_multiifo</code><span class="sig-paren">(</span><em>s</em>, <em>slide</em>, <em>step</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#NewSNRStatistic.coinc_multiifo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.NewSNRStatistic.coinc_multiifo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the coincident detection statistic.
-:param s: statistics
-:type s: dictionary keyed by ifo of single detector ranking
-:param slide:
-:type slide: (unused in this statistic)
-:param step:
-:type step: (unused in this statistic)</p>
+<code class="descname">coinc_multiifo</code><span class="sig-paren">(</span><em>s</em>, <em>slide</em>, <em>step</em>, <em>to_shift</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#NewSNRStatistic.coinc_multiifo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.NewSNRStatistic.coinc_multiifo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the coincident detection statistic.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array of coincident ranking statistic values</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of (ifo, single detector statistic) tuples</li>
+<li><strong>slide</strong> (<em>(</em><em>unused in this statistic</em><em>)</em>) – </li>
+<li><strong>step</strong> (<em>(</em><em>unused in this statistic</em><em>)</em>) – </li>
+<li><strong>to_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of integers indicating what multiples of the time shift will</li>
+<li><strong>applied</strong><strong> (</strong><strong>unused in this statistic</strong><strong>)</strong> (<em>be</em>) – </li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Array of coincident ranking statistic values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1735,24 +1761,24 @@ are required keys for this statistic.</td>
 
 <dl class="class">
 <dt id="pycbc.events.stat.PhaseTDExpFitSGPSDStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">PhaseTDExpFitSGPSDStatistic</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDExpFitSGPSDStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDExpFitSGPSDStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">PhaseTDExpFitSGPSDStatistic</code><span class="sig-paren">(</span><em>files</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDExpFitSGPSDStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDExpFitSGPSDStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.PhaseTDExpFitSGStatistic" title="pycbc.events.stat.PhaseTDExpFitSGStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.PhaseTDExpFitSGStatistic</span></code></a></p>
-<p>Statistic combining exponential noise model with signal histogram PDF
-and adding the sine-Gaussian veto and PSD variation statistic to the
+<p>Statistic combining exponential noise model with signal histogram PDF</p>
+<p>adding the sine-Gaussian veto and PSD variation statistic to the
 single detector ranking</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pycbc.events.stat.PhaseTDExpFitSGStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">PhaseTDExpFitSGStatistic</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDExpFitSGStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDExpFitSGStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">PhaseTDExpFitSGStatistic</code><span class="sig-paren">(</span><em>files</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDExpFitSGStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDExpFitSGStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.PhaseTDExpFitStatistic" title="pycbc.events.stat.PhaseTDExpFitStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.PhaseTDExpFitStatistic</span></code></a></p>
-<p>Statistic combining exponential noise model with signal histogram PDF
-and adding the sine-Gaussian veto to the single detector ranking</p>
+<p>Statistic combining exponential noise model with signal histogram PDF</p>
+<p>adding the sine-Gaussian veto to the single detector ranking</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pycbc.events.stat.PhaseTDExpFitStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">PhaseTDExpFitStatistic</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDExpFitStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDExpFitStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">PhaseTDExpFitStatistic</code><span class="sig-paren">(</span><em>files</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDExpFitStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDExpFitStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.PhaseTDStatistic" title="pycbc.events.stat.PhaseTDStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.PhaseTDStatistic</span></code></a>, <a class="reference internal" href="#pycbc.events.stat.ExpFitCombinedSNR" title="pycbc.events.stat.ExpFitCombinedSNR"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.ExpFitCombinedSNR</span></code></a></p>
 <p>Statistic combining exponential noise model with signal histogram PDF</p>
 <dl class="method">
@@ -1785,18 +1811,22 @@ and adding the sine-Gaussian veto to the single detector ranking</p>
 <dl class="method">
 <dt id="pycbc.events.stat.PhaseTDExpFitStatistic.single">
 <code class="descname">single</code><span class="sig-paren">(</span><em>trigs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDExpFitStatistic.single"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDExpFitStatistic.single" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the single detector statistic and assemble other parameters</p>
+<dd><p>Calculate the single detector statistic &amp; assemble other parameters</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>trigs</strong> (<em>dict of numpy.ndarrays</em><em>, </em><em>h5py group</em><em> (or </em><em>similar dict-like object</em><em>)</em>) – Dictionary-like object holding single detector trigger information.
-‘chisq_dof’, ‘snr’, ‘chisq’, ‘coa_phase’, ‘end_time’, and ‘sigmasq’
-are required keys.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>trigs</strong> (<em>dict of numpy.ndarrays</em><em>, </em><em>h5py group</em><em> or </em><em>similar dict-like object</em>) – Object holding single detector trigger information. ‘snr’, ‘chisq’,</li>
+<li><strong>'coa_phase'</strong><strong>, </strong><strong>'end_time'</strong><strong>, </strong><strong>and 'sigmasq' are required keys.</strong> (<em>'chisq_dof'</em><em>,</em>) – </li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Array of single detector parameter values</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Array of single detector parameter values</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1806,15 +1836,15 @@ are required keys.</td>
 
 <dl class="class">
 <dt id="pycbc.events.stat.PhaseTDSGStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">PhaseTDSGStatistic</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDSGStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDSGStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">PhaseTDSGStatistic</code><span class="sig-paren">(</span><em>files</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDSGStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDSGStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.PhaseTDStatistic" title="pycbc.events.stat.PhaseTDStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.PhaseTDStatistic</span></code></a></p>
 <p>PhaseTDStatistic but with sine-Gaussian veto added to the</p>
-<p>single detector ranking</p>
+<p>single-detector ranking</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pycbc.events.stat.PhaseTDStatistic">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">PhaseTDStatistic</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDStatistic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">PhaseTDStatistic</code><span class="sig-paren">(</span><em>files</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDStatistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDStatistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.events.stat.NewSNRStatistic" title="pycbc.events.stat.NewSNRStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.events.stat.NewSNRStatistic</span></code></a></p>
 <p>Statistic that re-weights combined newsnr using coinc parameters.</p>
 <p>The weighting is based on the PDF of time delays, phase differences and
@@ -1847,36 +1877,75 @@ amplitude ratios between triggers in different ifos.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pycbc.events.stat.PhaseTDStatistic.get_hist">
+<code class="descname">get_hist</code><span class="sig-paren">(</span><em>ifos=None</em>, <em>norm='max'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDStatistic.get_hist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDStatistic.get_hist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in a signal density file for the ifo combination</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="pycbc.events.stat.PhaseTDStatistic.logsignalrate">
-<code class="descname">logsignalrate</code><span class="sig-paren">(</span><em>s0</em>, <em>s1</em>, <em>slide</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDStatistic.logsignalrate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDStatistic.logsignalrate" title="Permalink to this definition">¶</a></dt>
+<code class="descname">logsignalrate</code><span class="sig-paren">(</span><em>s0</em>, <em>s1</em>, <em>shift</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDStatistic.logsignalrate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDStatistic.logsignalrate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the normalized log rate density of signals via lookup</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycbc.events.stat.PhaseTDStatistic.single">
-<code class="descname">single</code><span class="sig-paren">(</span><em>trigs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDStatistic.single"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDStatistic.single" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the single detector statistic and assemble other parameters</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dt id="pycbc.events.stat.PhaseTDStatistic.logsignalrate_multiifo">
+<code class="descname">logsignalrate_multiifo</code><span class="sig-paren">(</span><em>s</em>, <em>shift</em>, <em>to_shift</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDStatistic.logsignalrate_multiifo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDStatistic.logsignalrate_multiifo" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>trigs</strong> (<em>dict of numpy.ndarrays</em><em>, </em><em>h5py group</em><em> (or </em><em>similar dict-like object</em><em>)</em>) – Dictionary-like object holding single detector trigger information.
-‘chisq_dof’, ‘snr’, ‘chisq’, ‘coa_phase’, ‘end_time’, and ‘sigmasq’
-are required keys.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Array of single detector parameter values</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>s</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>, </em><em>length 2</em>) – List of sets of single-ifo trigger parameter values</li>
+<li><strong>shift</strong> (<em>numpy.ndarray</em>) – Array of floats giving the time shifts to be applied with</li>
+<li><strong>given by to_shift</strong> (<em>multiples</em>) – </li>
+<li><strong>to_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>, </em><em>length 2</em>) – List of time shift multiples</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="pycbc.events.stat.PhaseTDStatistic.signal_hist">
+<code class="descname">signal_hist</code><span class="sig-paren">(</span><em>td</em>, <em>pd</em>, <em>sn0</em>, <em>sn1</em>, <em>rd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDStatistic.signal_hist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDStatistic.signal_hist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pycbc.events.stat.PhaseTDStatistic.single">
+<code class="descname">single</code><span class="sig-paren">(</span><em>trigs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDStatistic.single"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDStatistic.single" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the single detector statistic &amp; assemble other parameters</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>trigs</strong> (<em>dict of numpy.ndarrays</em><em>, </em><em>h5py group</em><em> or </em><em>similar dict-like object</em>) – Object holding single detector trigger information. ‘snr’, ‘chisq’,</li>
+<li><strong>'coa_phase'</strong><strong>, </strong><strong>'end_time'</strong><strong>, </strong><strong>and 'sigmasq' are required keys.</strong> (<em>'chisq_dof'</em><em>,</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Array of single detector parameter values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycbc.events.stat.PhaseTDStatistic.slide_dt">
+<code class="descname">slide_dt</code><span class="sig-paren">(</span><em>singles</em>, <em>shift</em>, <em>slide_vec</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#PhaseTDStatistic.slide_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.PhaseTDStatistic.slide_dt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="pycbc.events.stat.Stat">
-<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">Stat</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#Stat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.Stat" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.events.stat.</code><code class="descname">Stat</code><span class="sig-paren">(</span><em>files=None</em>, <em>ifos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/events/stat.html#Stat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.events.stat.Stat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base class which should be extended to provide a coincident statistic</p>
 </dd></dl>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pycbc.events.stat &mdash; PyCBC 1.14.dev2 documentation</title>
+  <title>pycbc.events.stat &mdash; PyCBC 91ce41 documentation</title>
   
 
   
@@ -60,6 +60,10 @@
 
           
             
+            
+              <div class="version">
+                None
+              </div>
             
           
 
@@ -221,18 +225,20 @@
 <span class="c1">#</span>
 <span class="c1"># =============================================================================</span>
 <span class="c1">#</span>
-<span class="sd">&quot;&quot;&quot; This module contains functions for calculating coincident ranking</span>
-<span class="sd">statistic values</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains functions for calculating coincident ranking statistic</span>
+<span class="sd">values.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">ranking</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">coinc_rate</span>
 
 
 <div class="viewcode-block" id="Stat"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.Stat">[docs]</a><span class="k">class</span> <span class="nc">Stat</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class which should be extended to provide a coincident statistic&quot;&quot;&quot;</span>
 
-    <span class="sd">&quot;&quot;&quot; Base class which should be extended to provide a coincident statistic&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a statistic class instance</span>
 
 <span class="sd">        Parameters</span>
@@ -242,23 +248,32 @@
 <span class="sd">        construct the coincident statistics. The files must have a &#39;stat&#39;</span>
 <span class="sd">        attribute which is used to associate them with the appropriate</span>
 <span class="sd">        statistic class.</span>
+
+<span class="sd">        ifos: list of detector names, optional</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">h5py</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">files</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
             <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
             <span class="n">stat</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;stat&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">stat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;We already have one file with stat attr =&quot;</span>
+                                   <span class="s2">&quot; </span><span class="si">%s</span><span class="s2">. Can&#39;t provide more than one!&quot;</span> <span class="o">%</span> <span class="n">stat</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Found file </span><span class="si">%s</span><span class="s2"> for stat </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">stat</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">stat</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
 
         <span class="c1"># Provide the dtype of the single detector method&#39;s output</span>
         <span class="c1"># This is used by background estimation codes that need to maintain</span>
         <span class="c1"># a buffer of such values.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">single_dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">single_dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ifos</span> <span class="o">=</span> <span class="n">ifos</span> <span class="ow">or</span> <span class="p">[]</span></div>
 
 
 <div class="viewcode-block" id="NewSNRStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.NewSNRStatistic">[docs]</a><span class="k">class</span> <span class="nc">NewSNRStatistic</span><span class="p">(</span><span class="n">Stat</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; Calculate the NewSNR coincident detection statistic &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the NewSNR coincident detection statistic&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="NewSNRStatistic.single"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.NewSNRStatistic.single">[docs]</a>    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculate the single detector statistic, here equal to newsnr</span>
@@ -294,26 +309,30 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">s0</span> <span class="o">**</span> <span class="mf">2.</span> <span class="o">+</span> <span class="n">s1</span> <span class="o">**</span> <span class="mf">2.</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span></div>
 
-<div class="viewcode-block" id="NewSNRStatistic.coinc_multiifo"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.NewSNRStatistic.coinc_multiifo">[docs]</a>    <span class="k">def</span> <span class="nf">coinc_multiifo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span>
+<div class="viewcode-block" id="NewSNRStatistic.coinc_multiifo"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.NewSNRStatistic.coinc_multiifo">[docs]</a>    <span class="k">def</span> <span class="nf">coinc_multiifo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">to_shift</span><span class="p">,</span>
                        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># pylint:disable=unused-argument</span>
         <span class="sd">&quot;&quot;&quot;Calculate the coincident detection statistic.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        s: dictionary keyed by ifo of single detector ranking</span>
-<span class="sd">           statistics</span>
+<span class="sd">        s: list</span>
+<span class="sd">            List of (ifo, single detector statistic) tuples</span>
 <span class="sd">        slide: (unused in this statistic)</span>
 <span class="sd">        step: (unused in this statistic)</span>
+<span class="sd">        to_shift: list</span>
+<span class="sd">            List of integers indicating what multiples of the time shift will</span>
+<span class="sd">        be applied (unused in this statistic)</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        numpy.ndarray</span>
 <span class="sd">            Array of coincident ranking statistic values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mf">2.</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">**</span> <span class="mf">0.5</span></div></div>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sngl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mf">2.</span> <span class="k">for</span> <span class="n">sngl</span> <span class="ow">in</span> <span class="n">s</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span></div></div>
 
 
 <div class="viewcode-block" id="NewSNRSGStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.NewSNRSGStatistic">[docs]</a><span class="k">class</span> <span class="nc">NewSNRSGStatistic</span><span class="p">(</span><span class="n">NewSNRStatistic</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; Calculate the NewSNRSG coincident detection statistic &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the NewSNRSG coincident detection statistic&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="NewSNRSGStatistic.single"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.NewSNRSGStatistic.single">[docs]</a>    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculate the single detector statistic, here equal to newsnr_sgveto</span>
@@ -332,12 +351,11 @@
 
 
 <div class="viewcode-block" id="NewSNRSGPSDStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.NewSNRSGPSDStatistic">[docs]</a><span class="k">class</span> <span class="nc">NewSNRSGPSDStatistic</span><span class="p">(</span><span class="n">NewSNRSGStatistic</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; Calculate the NewSNRSGPSD coincident detection statistic &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the NewSNRSGPSD coincident detection statistic&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="NewSNRSGPSDStatistic.single"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.NewSNRSGPSDStatistic.single">[docs]</a>    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculate the single detector statistic, here equal to newsnr</span>
-<span class="sd">           combined with sgveto and psdvar statistic</span>
+<span class="sd">        combined with sgveto and psdvar statistic</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -352,7 +370,6 @@
 
 
 <div class="viewcode-block" id="NetworkSNRStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.NetworkSNRStatistic">[docs]</a><span class="k">class</span> <span class="nc">NetworkSNRStatistic</span><span class="p">(</span><span class="n">NewSNRStatistic</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot;Same as the NewSNR statistic, but just sum of squares of SNRs&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="NetworkSNRStatistic.single"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.NetworkSNRStatistic.single">[docs]</a>    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigs</span><span class="p">):</span>
@@ -360,7 +377,6 @@
 
 
 <div class="viewcode-block" id="NewSNRCutStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.NewSNRCutStatistic">[docs]</a><span class="k">class</span> <span class="nc">NewSNRCutStatistic</span><span class="p">(</span><span class="n">NewSNRStatistic</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot;Same as the NewSNR statistic, but demonstrates a cut of the triggers&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="NewSNRCutStatistic.single"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.NewSNRCutStatistic.single">[docs]</a>    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigs</span><span class="p">):</span>
@@ -398,52 +414,82 @@
 <span class="sd">        cstat: numpy.ndarray</span>
 <span class="sd">            Array of coincident ranking statistic values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cstat</span> <span class="o">=</span> <span class="p">(</span><span class="n">s0</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> <span class="n">s1</span><span class="o">**</span><span class="mf">2.</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
-        <span class="n">cstat</span><span class="p">[</span><span class="n">s0</span><span class="o">==-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">cstat</span><span class="p">[</span><span class="n">s1</span><span class="o">==-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">cstat</span> <span class="o">=</span> <span class="p">(</span><span class="n">s0</span> <span class="o">**</span> <span class="mf">2.</span> <span class="o">+</span> <span class="n">s1</span> <span class="o">**</span> <span class="mf">2.</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+        <span class="n">cstat</span><span class="p">[</span><span class="n">s0</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">cstat</span><span class="p">[</span><span class="n">s1</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="n">cstat</span></div></div>
 
 
 <div class="viewcode-block" id="PhaseTDStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDStatistic">[docs]</a><span class="k">class</span> <span class="nc">PhaseTDStatistic</span><span class="p">(</span><span class="n">NewSNRStatistic</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot;Statistic that re-weights combined newsnr using coinc parameters.</span>
 
 <span class="sd">    The weighting is based on the PDF of time delays, phase differences and</span>
 <span class="sd">    amplitude ratios between triggers in different ifos.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
-        <span class="n">NewSNRStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;phasetd_newsnr&#39;</span><span class="p">][</span><span class="s1">&#39;map&#39;</span><span class="p">][:]</span>
 
-        <span class="c1"># Normalize so that peak has no effect on newsnr</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hist</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hist</span><span class="p">)</span>
-
-        <span class="c1"># Bin boundaries are stored in the hdf file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tbins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;phasetd_newsnr&#39;</span><span class="p">][</span><span class="s1">&#39;tbins&#39;</span><span class="p">][:]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pbins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;phasetd_newsnr&#39;</span><span class="p">][</span><span class="s1">&#39;pbins&#39;</span><span class="p">][:]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sbins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;phasetd_newsnr&#39;</span><span class="p">][</span><span class="s1">&#39;sbins&#39;</span><span class="p">][:]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rbins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;phasetd_newsnr&#39;</span><span class="p">][</span><span class="s1">&#39;rbins&#39;</span><span class="p">][:]</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">NewSNRStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="n">ifos</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">single_dtype</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;snglstat&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                    <span class="p">(</span><span class="s1">&#39;coa_phase&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                    <span class="p">(</span><span class="s1">&#39;end_time&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
-                    <span class="p">(</span><span class="s1">&#39;sigmasq&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                    <span class="p">(</span><span class="s1">&#39;snr&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">)]</span>
+                             <span class="p">(</span><span class="s1">&#39;coa_phase&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+                             <span class="p">(</span><span class="s1">&#39;end_time&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+                             <span class="p">(</span><span class="s1">&#39;sigmasq&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+                             <span class="p">(</span><span class="s1">&#39;snr&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+                             <span class="p">]</span>
 
         <span class="c1"># Assign attribute so that it can be replaced with other functions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_newsnr</span> <span class="o">=</span> <span class="n">ranking</span><span class="o">.</span><span class="n">get_newsnr</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bins</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hist_ifos</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="PhaseTDStatistic.get_hist"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDStatistic.get_hist">[docs]</a>    <span class="k">def</span> <span class="nf">get_hist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;max&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read in a signal density file for the ifo combination&quot;&quot;&quot;</span>
+
+        <span class="c1"># default name for old 2-ifo workflow</span>
+        <span class="k">if</span> <span class="s1">&#39;phasetd_newsnr&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
+            <span class="n">histfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;phasetd_newsnr&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ifos</span> <span class="o">=</span> <span class="n">ifos</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifos</span>  <span class="c1"># if None, use the instance attribute</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ifos</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Need exactly 2 ifos for the p/t/a &quot;</span>
+                                   <span class="s2">&quot;statistic! Ifos given were &quot;</span> <span class="o">+</span> <span class="n">ifos</span><span class="p">)</span>
+            <span class="n">matching</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> \
+                        <span class="s1">&#39;phasetd&#39;</span> <span class="ow">in</span> <span class="n">k</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ifos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">k</span> <span class="ow">and</span> <span class="n">ifos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matching</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">histfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">matching</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                  <span class="s2">&quot;</span><span class="si">%i</span><span class="s2"> statistic files had an attribute matching phasetd*</span><span class="si">%s%s</span><span class="s2"> !&quot;</span>
+                  <span class="s2">&quot;Should be exactly 1&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matching</span><span class="p">),</span> <span class="n">ifos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ifos</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using signal histogram </span><span class="si">%s</span><span class="s2"> for ifos </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">matching</span><span class="p">,</span>
+                         <span class="n">ifos</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="n">histfile</span><span class="p">[</span><span class="s1">&#39;map&#39;</span><span class="p">][:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hist_ifos</span> <span class="o">=</span> <span class="n">ifos</span>
+
+        <span class="k">if</span> <span class="n">norm</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
+            <span class="c1"># Normalize so that peak of hist is equal to unity</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hist</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hist</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Sorry, we have no other normalizations&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Bin boundaries are stored in the hdf file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">histfile</span><span class="p">[</span><span class="s1">&#39;tbins&#39;</span><span class="p">][:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">[</span><span class="s1">&#39;dphi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">histfile</span><span class="p">[</span><span class="s1">&#39;pbins&#39;</span><span class="p">][:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">[</span><span class="s1">&#39;snr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">histfile</span><span class="p">[</span><span class="s1">&#39;sbins&#39;</span><span class="p">][:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">[</span><span class="s1">&#39;sigma_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">histfile</span><span class="p">[</span><span class="s1">&#39;rbins&#39;</span><span class="p">][:]</span></div>
+
 <div class="viewcode-block" id="PhaseTDStatistic.single"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDStatistic.single">[docs]</a>    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the single detector statistic and assemble other parameters</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the single detector statistic &amp; assemble other parameters</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        trigs: dict of numpy.ndarrays, h5py group (or similar dict-like object)</span>
-<span class="sd">            Dictionary-like object holding single detector trigger information.</span>
-<span class="sd">            &#39;chisq_dof&#39;, &#39;snr&#39;, &#39;chisq&#39;, &#39;coa_phase&#39;, &#39;end_time&#39;, and &#39;sigmasq&#39;</span>
-<span class="sd">            are required keys.</span>
+<span class="sd">        trigs: dict of numpy.ndarrays, h5py group or similar dict-like object</span>
+<span class="sd">            Object holding single detector trigger information. &#39;snr&#39;, &#39;chisq&#39;,</span>
+<span class="sd">        &#39;chisq_dof&#39;, &#39;coa_phase&#39;, &#39;end_time&#39;, and &#39;sigmasq&#39; are required keys.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -459,15 +505,10 @@
         <span class="n">singles</span><span class="p">[</span><span class="s1">&#39;snr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trigs</span><span class="p">[</span><span class="s1">&#39;snr&#39;</span><span class="p">][:]</span>
         <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">singles</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PhaseTDStatistic.logsignalrate"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDStatistic.logsignalrate">[docs]</a>    <span class="k">def</span> <span class="nf">logsignalrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculate the normalized log rate density of signals via lookup&quot;&quot;&quot;</span>
-        <span class="n">td</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">s0</span><span class="p">[</span><span class="s1">&#39;end_time&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">s1</span><span class="p">[</span><span class="s1">&#39;end_time&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">slide</span><span class="o">*</span><span class="n">step</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">pd</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">s0</span><span class="p">[</span><span class="s1">&#39;coa_phase&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">s1</span><span class="p">[</span><span class="s1">&#39;coa_phase&#39;</span><span class="p">])</span> <span class="o">%</span> \
-                         <span class="p">(</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">rd</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">s0</span><span class="p">[</span><span class="s1">&#39;sigmasq&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">s1</span><span class="p">[</span><span class="s1">&#39;sigmasq&#39;</span><span class="p">])</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">sn0</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">s0</span><span class="p">[</span><span class="s1">&#39;snr&#39;</span><span class="p">],</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">sn1</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">s1</span><span class="p">[</span><span class="s1">&#39;snr&#39;</span><span class="p">],</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class="viewcode-block" id="PhaseTDStatistic.signal_hist"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDStatistic.signal_hist">[docs]</a>    <span class="k">def</span> <span class="nf">signal_hist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">td</span><span class="p">,</span> <span class="n">pd</span><span class="p">,</span> <span class="n">sn0</span><span class="p">,</span> <span class="n">sn1</span><span class="p">,</span> <span class="n">rd</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
+        <span class="c1"># enforce that sigma ratio is &lt; 1 by swapping values</span>
         <span class="n">snr0</span> <span class="o">=</span> <span class="n">sn0</span> <span class="o">*</span> <span class="mi">1</span>
         <span class="n">snr1</span> <span class="o">=</span> <span class="n">sn1</span> <span class="o">*</span> <span class="mi">1</span>
 
@@ -476,30 +517,95 @@
         <span class="n">rd</span><span class="p">[</span><span class="n">rd</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">rd</span><span class="p">[</span><span class="n">rd</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
 
         <span class="c1"># Find which bin each coinc falls into</span>
-        <span class="n">tv</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tbins</span><span class="p">,</span> <span class="n">td</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="n">pv</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbins</span><span class="p">,</span> <span class="n">pd</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="n">s0v</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sbins</span><span class="p">,</span> <span class="n">snr0</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="n">s1v</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sbins</span><span class="p">,</span> <span class="n">snr1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="n">rv</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rbins</span><span class="p">,</span> <span class="n">rd</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">tv</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">],</span> <span class="n">td</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">pv</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">[</span><span class="s1">&#39;dphi&#39;</span><span class="p">],</span> <span class="n">pd</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">s0v</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">[</span><span class="s1">&#39;snr&#39;</span><span class="p">],</span> <span class="n">snr0</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">s1v</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">[</span><span class="s1">&#39;snr&#39;</span><span class="p">],</span> <span class="n">snr1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">[</span><span class="s1">&#39;sigma_ratio&#39;</span><span class="p">],</span> <span class="n">rd</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
 
-        <span class="c1"># Enforce that points fits into the bin boundaries: if a point lies</span>
+        <span class="c1"># Enforce that points fit into the bin boundaries: if a point lies</span>
         <span class="c1"># outside the boundaries it is pushed back to the nearest bin.</span>
-        <span class="n">tv</span><span class="p">[</span><span class="n">tv</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">tv</span><span class="p">[</span><span class="n">tv</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tbins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tbins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
-        <span class="n">pv</span><span class="p">[</span><span class="n">pv</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">pv</span><span class="p">[</span><span class="n">pv</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
-        <span class="n">s0v</span><span class="p">[</span><span class="n">s0v</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">s0v</span><span class="p">[</span><span class="n">s0v</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sbins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sbins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
-        <span class="n">s1v</span><span class="p">[</span><span class="n">s1v</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">s1v</span><span class="p">[</span><span class="n">s1v</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sbins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sbins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
-        <span class="n">rv</span><span class="p">[</span><span class="n">rv</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">rv</span><span class="p">[</span><span class="n">rv</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rbins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rbins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
+        <span class="k">for</span> <span class="n">binnum</span><span class="p">,</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="n">tv</span><span class="p">,</span> <span class="n">pv</span><span class="p">,</span> <span class="n">rv</span><span class="p">,</span> <span class="n">s0v</span><span class="p">,</span> <span class="n">s1v</span><span class="p">],</span>
+                                <span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">,</span> <span class="s1">&#39;dphi&#39;</span><span class="p">,</span> <span class="s1">&#39;sigma_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;snr&#39;</span><span class="p">,</span> <span class="s1">&#39;snr&#39;</span><span class="p">]):</span>
+            <span class="n">binend</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">[</span><span class="n">axis</span><span class="p">])</span>
+            <span class="n">binnum</span><span class="p">[</span><span class="n">binnum</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">binnum</span><span class="p">[</span><span class="n">binnum</span> <span class="o">&gt;=</span> <span class="n">binend</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">binend</span> <span class="o">-</span> <span class="mi">2</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist</span><span class="p">[</span><span class="n">tv</span><span class="p">,</span> <span class="n">pv</span><span class="p">,</span> <span class="n">s0v</span><span class="p">,</span> <span class="n">s1v</span><span class="p">,</span> <span class="n">rv</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="PhaseTDStatistic.coinc"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDStatistic.coinc">[docs]</a>    <span class="k">def</span> <span class="nf">coinc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+<div class="viewcode-block" id="PhaseTDStatistic.slide_dt"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDStatistic.slide_dt">[docs]</a>    <span class="k">def</span> <span class="nf">slide_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">singles</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">slide_vec</span><span class="p">):</span>
+        <span class="c1"># Apply time shifts in the multiples specified by slide_vec</span>
+        <span class="c1"># and return resulting time difference</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">singles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">slide_vec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">singles</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;end_time&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">shift</span> <span class="o">*</span> <span class="n">slide_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span>\
+            <span class="p">(</span><span class="n">singles</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;end_time&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">shift</span> <span class="o">*</span> <span class="n">slide_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">dt</span></div>
+
+<div class="viewcode-block" id="PhaseTDStatistic.logsignalrate"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDStatistic.logsignalrate">[docs]</a>    <span class="k">def</span> <span class="nf">logsignalrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">shift</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the normalized log rate density of signals via lookup&quot;&quot;&quot;</span>
+
+        <span class="c1"># does not require ifos to be specified, only 1 p/t/a file</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_hist</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using pre-set signal histogram&quot;</span><span class="p">)</span>
+
+        <span class="c1"># for 2-ifo pipeline, add time shift to 2nd ifo (&#39;s1&#39;)</span>
+        <span class="n">slidevec</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">td</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slide_dt</span><span class="p">([</span><span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">],</span> <span class="n">shift</span><span class="p">,</span> <span class="n">slidevec</span><span class="p">),</span>
+                         <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">td</span> <span class="o">&gt;</span> <span class="mf">1.</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+              <span class="s2">&quot;Time difference bigger than 1 second after applying any time &quot;</span>
+              <span class="s2">&quot;shifts! This should not happen&quot;</span><span class="p">)</span>
+        <span class="n">pd</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">s0</span><span class="p">[</span><span class="s1">&#39;coa_phase&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">s1</span><span class="p">[</span><span class="s1">&#39;coa_phase&#39;</span><span class="p">])</span> <span class="o">%</span> \
+                         <span class="p">(</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sn0</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">s0</span><span class="p">[</span><span class="s1">&#39;snr&#39;</span><span class="p">],</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sn1</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">s1</span><span class="p">[</span><span class="s1">&#39;snr&#39;</span><span class="p">],</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">rd</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">s0</span><span class="p">[</span><span class="s1">&#39;sigmasq&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">s1</span><span class="p">[</span><span class="s1">&#39;sigmasq&#39;</span><span class="p">])</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_hist</span><span class="p">(</span><span class="n">td</span><span class="p">,</span> <span class="n">pd</span><span class="p">,</span> <span class="n">sn0</span><span class="p">,</span> <span class="n">sn1</span><span class="p">,</span> <span class="n">rd</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PhaseTDStatistic.logsignalrate_multiifo"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDStatistic.logsignalrate_multiifo">[docs]</a>    <span class="k">def</span> <span class="nf">logsignalrate_multiifo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">to_shift</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the coincident detection statistic.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        s: list, length 2</span>
+<span class="sd">            List of sets of single-ifo trigger parameter values</span>
+<span class="sd">        shift: numpy.ndarray</span>
+<span class="sd">            Array of floats giving the time shifts to be applied with</span>
+<span class="sd">        multiples given by to_shift</span>
+<span class="sd">        to_shift: list, length 2</span>
+<span class="sd">            List of time shift multiples</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">to_shift</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+
+        <span class="c1"># At present for triples use the H/L signal histogram</span>
+        <span class="n">hist_ifos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifos</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ifos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="p">[</span><span class="s1">&#39;H1&#39;</span><span class="p">,</span> <span class="s1">&#39;L1&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_hist</span><span class="p">(</span><span class="n">hist_ifos</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist_ifos</span> <span class="o">==</span> <span class="n">hist_ifos</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using pre-set signal histogram for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">hist_ifos</span><span class="p">)</span>
+
+        <span class="n">td</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slide_dt</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">to_shift</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">td</span> <span class="o">&gt;</span> <span class="mf">1.</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+              <span class="s2">&quot;Time difference bigger than 1 second after applying any time &quot;</span>
+              <span class="s2">&quot;shifts! This should not happen&quot;</span><span class="p">)</span>
+        <span class="n">pd</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;coa_phase&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;coa_phase&#39;</span><span class="p">])</span> <span class="o">%</span> \
+                         <span class="p">(</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sn0</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;snr&#39;</span><span class="p">],</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sn1</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;snr&#39;</span><span class="p">],</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">rd</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;sigmasq&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;sigmasq&#39;</span><span class="p">])</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_hist</span><span class="p">(</span><span class="n">td</span><span class="p">,</span> <span class="n">pd</span><span class="p">,</span> <span class="n">sn0</span><span class="p">,</span> <span class="n">sn1</span><span class="p">,</span> <span class="n">rd</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PhaseTDStatistic.coinc"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDStatistic.coinc">[docs]</a>    <span class="k">def</span> <span class="nf">coinc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the coincident detection statistic.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -518,8 +624,8 @@
 <span class="sd">        coinc_stat: numpy.ndarray</span>
 <span class="sd">            An array of the coincident ranking statistic values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">rstat</span> <span class="o">=</span> <span class="n">s0</span><span class="p">[</span><span class="s1">&#39;snglstat&#39;</span><span class="p">]</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> <span class="n">s1</span><span class="p">[</span><span class="s1">&#39;snglstat&#39;</span><span class="p">]</span><span class="o">**</span><span class="mf">2.</span>
-        <span class="n">cstat</span> <span class="o">=</span> <span class="n">rstat</span> <span class="o">+</span> <span class="mf">2.</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">logsignalrate</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+        <span class="n">rstat</span> <span class="o">=</span> <span class="n">s0</span><span class="p">[</span><span class="s1">&#39;snglstat&#39;</span><span class="p">]</span> <span class="o">**</span> <span class="mf">2.</span> <span class="o">+</span> <span class="n">s1</span><span class="p">[</span><span class="s1">&#39;snglstat&#39;</span><span class="p">]</span> <span class="o">**</span> <span class="mf">2.</span>
+        <span class="n">cstat</span> <span class="o">=</span> <span class="n">rstat</span> <span class="o">+</span> <span class="mf">2.</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">logsignalrate</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">slide</span> <span class="o">*</span> <span class="n">step</span><span class="p">)</span>
         <span class="n">cstat</span><span class="p">[</span><span class="n">cstat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="n">cstat</span> <span class="o">**</span> <span class="mf">0.5</span></div></div>
 
@@ -527,36 +633,35 @@
 <div class="viewcode-block" id="PhaseTDSGStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDSGStatistic">[docs]</a><span class="k">class</span> <span class="nc">PhaseTDSGStatistic</span><span class="p">(</span><span class="n">PhaseTDStatistic</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;PhaseTDStatistic but with sine-Gaussian veto added to the</span>
 
-<span class="sd">    single detector ranking</span>
+<span class="sd">    single-detector ranking</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
-        <span class="n">PhaseTDStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">PhaseTDStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="n">ifos</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_newsnr</span> <span class="o">=</span> <span class="n">ranking</span><span class="o">.</span><span class="n">get_newsnr_sgveto</span></div>
 
 
 <div class="viewcode-block" id="ExpFitStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitStatistic">[docs]</a><span class="k">class</span> <span class="nc">ExpFitStatistic</span><span class="p">(</span><span class="n">NewSNRStatistic</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot;Detection statistic using an exponential falloff noise model.</span>
 
 <span class="sd">    Statistic approximates the negative log noise coinc rate density per</span>
 <span class="sd">    template over single-ifo newsnr values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find any statistic files !&quot;</span><span class="p">)</span>
-        <span class="n">NewSNRStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+        <span class="n">NewSNRStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="n">ifos</span><span class="p">)</span>
+
         <span class="c1"># the stat file attributes are hard-coded as &#39;%{ifo}-fit_coeffs&#39;</span>
         <span class="n">parsed_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ifos</span> <span class="o">=</span> <span class="p">[</span><span class="n">at</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="n">parsed_attrs</span> <span class="k">if</span>
-                     <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">at</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">at</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;fit_coeffs&#39;</span><span class="p">)]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ifos</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bg_ifos</span> <span class="o">=</span> <span class="p">[</span><span class="n">at</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="n">parsed_attrs</span> <span class="k">if</span>
+                       <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">at</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">at</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;fit_coeffs&#39;</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bg_ifos</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;None of the statistic files has the required &quot;</span>
                                <span class="s2">&quot;attribute called </span><span class="si">{ifo}</span><span class="s2">-fit_coeffs !&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fits_by_tid</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alphamax</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifos</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bg_ifos</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fits_by_tid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assign_fits</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_ref_vals</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 
@@ -570,22 +675,25 @@
         <span class="c1"># the template_ids and fit coeffs are stored in an arbitrary order</span>
         <span class="c1"># create new arrays in template_id order for easier recall</span>
         <span class="n">tid_sort</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">template_id</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;alpha&#39;</span><span class="p">:</span><span class="n">alphas</span><span class="p">[</span><span class="n">tid_sort</span><span class="p">],</span> <span class="s1">&#39;rate&#39;</span><span class="p">:</span><span class="n">rates</span><span class="p">[</span><span class="n">tid_sort</span><span class="p">],</span>
-                <span class="s1">&#39;thresh&#39;</span><span class="p">:</span><span class="n">coeff_file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;stat_threshold&#39;</span><span class="p">]}</span></div>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="n">alphas</span><span class="p">[</span><span class="n">tid_sort</span><span class="p">],</span>
+                <span class="s1">&#39;rate&#39;</span><span class="p">:</span> <span class="n">rates</span><span class="p">[</span><span class="n">tid_sort</span><span class="p">],</span>
+                <span class="s1">&#39;thresh&#39;</span><span class="p">:</span> <span class="n">coeff_file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;stat_threshold&#39;</span><span class="p">]</span>
+                <span class="p">}</span></div>
 
 <div class="viewcode-block" id="ExpFitStatistic.get_ref_vals"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitStatistic.get_ref_vals">[docs]</a>    <span class="k">def</span> <span class="nf">get_ref_vals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ifo</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alphamax</span><span class="p">[</span><span class="n">ifo</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fits_by_tid</span><span class="p">[</span><span class="n">ifo</span><span class="p">][</span><span class="s1">&#39;alpha&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ExpFitStatistic.find_fits"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitStatistic.find_fits">[docs]</a>    <span class="k">def</span> <span class="nf">find_fits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get fit coeffs for a specific ifo and template id(s)&quot;&quot;&quot;</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">tnum</span> <span class="o">=</span> <span class="n">trigs</span><span class="o">.</span><span class="n">template_num</span>  <span class="c1"># exists if accessed via coinc_findtrigs</span>
             <span class="n">ifo</span> <span class="o">=</span> <span class="n">trigs</span><span class="o">.</span><span class="n">ifo</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="n">tnum</span> <span class="o">=</span> <span class="n">trigs</span><span class="p">[</span><span class="s1">&#39;template_id&#39;</span><span class="p">]</span>  <span class="c1"># exists for SingleDetTriggers</span>
-            <span class="c1"># Should only be one ifo fit file provided</span>
-            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ifos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-            <span class="n">ifo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Should be exactly one ifo fit file provided</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bg_ifos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="n">ifo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bg_ifos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="c1"># fits_by_tid is a dictionary of dictionaries of arrays</span>
         <span class="c1"># indexed by ifo / coefficient name / template_id</span>
         <span class="n">alphai</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fits_by_tid</span><span class="p">[</span><span class="n">ifo</span><span class="p">][</span><span class="s1">&#39;alpha&#39;</span><span class="p">][</span><span class="n">tnum</span><span class="p">]</span>
@@ -594,8 +702,7 @@
         <span class="k">return</span> <span class="n">alphai</span><span class="p">,</span> <span class="n">ratei</span><span class="p">,</span> <span class="n">thresh</span></div>
 
 <div class="viewcode-block" id="ExpFitStatistic.lognoiserate"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitStatistic.lognoiserate">[docs]</a>    <span class="k">def</span> <span class="nf">lognoiserate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the log noise rate density over single-ifo newsnr</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the log noise rate density over single-ifo newsnr</span>
 
 <span class="sd">        Read in single trigger information, make the newsnr statistic</span>
 <span class="sd">        and rescale by the fitted coefficients alpha and rate</span>
@@ -603,7 +710,7 @@
         <span class="n">alphai</span><span class="p">,</span> <span class="n">ratei</span><span class="p">,</span> <span class="n">thresh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_fits</span><span class="p">(</span><span class="n">trigs</span><span class="p">)</span>
         <span class="n">newsnr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_newsnr</span><span class="p">(</span><span class="n">trigs</span><span class="p">)</span>
         <span class="c1"># alphai is constant of proportionality between single-ifo newsnr and</span>
-        <span class="c1">#  negative log noise likelihood in given template</span>
+        <span class="c1">#   negative log noise likelihood in given template</span>
         <span class="c1"># ratei is rate of trigs in given template compared to average</span>
         <span class="c1"># thresh is stat threshold used in given ifo</span>
         <span class="n">lognoisel</span> <span class="o">=</span> <span class="o">-</span> <span class="n">alphai</span> <span class="o">*</span> <span class="p">(</span><span class="n">newsnr</span> <span class="o">-</span> <span class="n">thresh</span><span class="p">)</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">alphai</span><span class="p">)</span> <span class="o">+</span> \
@@ -612,15 +719,17 @@
 
 <div class="viewcode-block" id="ExpFitStatistic.single"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitStatistic.single">[docs]</a>    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Single-detector statistic, here just equal to the log noise rate&quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lognoiserate</span><span class="p">(</span><span class="n">trigs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ExpFitStatistic.coinc"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitStatistic.coinc">[docs]</a>    <span class="k">def</span> <span class="nf">coinc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span> <span class="c1"># pylint:disable=unused-argument</span>
         <span class="sd">&quot;&quot;&quot;Calculate the final coinc ranking statistic&quot;&quot;&quot;</span>
+
         <span class="c1"># Approximate log likelihood ratio by summing single-ifo negative</span>
         <span class="c1"># log noise likelihoods</span>
         <span class="n">loglr</span> <span class="o">=</span> <span class="o">-</span> <span class="n">s0</span> <span class="o">-</span> <span class="n">s1</span>
         <span class="c1"># add squares of threshold stat values via idealized Gaussian formula</span>
-        <span class="n">threshes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fits_by_tid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;thresh&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifos</span><span class="p">]</span>
+        <span class="n">threshes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fits_by_tid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;thresh&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bg_ifos</span><span class="p">]</span>
         <span class="n">loglr</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">t</span><span class="o">**</span><span class="mf">2.</span> <span class="o">/</span> <span class="mf">2.</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threshes</span><span class="p">])</span>
         <span class="c1"># convert back to a coinc-SNR-like statistic</span>
         <span class="c1"># via log likelihood ratio \propto rho_c^2 / 2</span>
@@ -628,21 +737,20 @@
 
 
 <div class="viewcode-block" id="ExpFitCombinedSNR"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitCombinedSNR">[docs]</a><span class="k">class</span> <span class="nc">ExpFitCombinedSNR</span><span class="p">(</span><span class="n">ExpFitStatistic</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot;Reworking of ExpFitStatistic designed to resemble network SNR</span>
 
 <span class="sd">    Use a monotonic function of the negative log noise rate density which</span>
 <span class="sd">    approximates combined (new)snr for coincs with similar newsnr in each ifo</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
-        <span class="n">ExpFitStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">ExpFitStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="n">ifos</span><span class="p">)</span>
         <span class="c1"># for low-mass templates the exponential slope alpha \approx 6</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpharef</span> <span class="o">=</span> <span class="mf">6.</span>
 
 <div class="viewcode-block" id="ExpFitCombinedSNR.use_alphamax"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitCombinedSNR.use_alphamax">[docs]</a>    <span class="k">def</span> <span class="nf">use_alphamax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># take reference slope as the harmonic mean of individual ifo slopes</span>
-        <span class="n">inv_alphas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphamax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifos</span><span class="p">]</span>
+        <span class="n">inv_alphas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphamax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bg_ifos</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpharef</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">inv_alphas</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">inv_alphas</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ExpFitCombinedSNR.single"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitCombinedSNR.single">[docs]</a>    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigs</span><span class="p">):</span>
@@ -658,45 +766,43 @@
         <span class="c1"># scale by 1/sqrt(2) to resemble network SNR</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">s0</span> <span class="o">+</span> <span class="n">s1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span><span class="o">**</span><span class="mf">0.5</span></div>
 
-<div class="viewcode-block" id="ExpFitCombinedSNR.coinc_multiifo"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitCombinedSNR.coinc_multiifo">[docs]</a>    <span class="k">def</span> <span class="nf">coinc_multiifo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span>
-                       <span class="n">step</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># pylint:disable=unused-argument</span>
+<div class="viewcode-block" id="ExpFitCombinedSNR.coinc_multiifo"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitCombinedSNR.coinc_multiifo">[docs]</a>    <span class="k">def</span> <span class="nf">coinc_multiifo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">to_shift</span><span class="p">,</span>
+                       <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># pylint:disable=unused-argument</span>
         <span class="c1"># scale by 1/sqrt(number of ifos) to resemble network SNR</span>
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span></div></div>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sngl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">sngl</span> <span class="ow">in</span> <span class="n">s</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span></div></div>
 
 
 <div class="viewcode-block" id="ExpFitSGCombinedSNR"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitSGCombinedSNR">[docs]</a><span class="k">class</span> <span class="nc">ExpFitSGCombinedSNR</span><span class="p">(</span><span class="n">ExpFitCombinedSNR</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ExpFitCombinedSNR but with sine-Gaussian veto added to the single</span>
 
-    <span class="sd">&quot;&quot;&quot;ExpFitCombinedSNR but with sine-Gaussian veto added to the</span>
-
-<span class="sd">    single detector ranking</span>
+<span class="sd">    detector ranking</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
-        <span class="n">ExpFitCombinedSNR</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">ExpFitCombinedSNR</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="n">ifos</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_newsnr</span> <span class="o">=</span> <span class="n">ranking</span><span class="o">.</span><span class="n">get_newsnr_sgveto</span></div>
 
 
 <div class="viewcode-block" id="ExpFitSGPSDCombinedSNR"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitSGPSDCombinedSNR">[docs]</a><span class="k">class</span> <span class="nc">ExpFitSGPSDCombinedSNR</span><span class="p">(</span><span class="n">ExpFitCombinedSNR</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot;ExpFitCombinedSNR but with sine-Gaussian veto and PSD variation added to</span>
 
 <span class="sd">    the single detector ranking</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
-        <span class="n">ExpFitCombinedSNR</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">ExpFitCombinedSNR</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="n">ifos</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_newsnr</span> <span class="o">=</span> <span class="n">ranking</span><span class="o">.</span><span class="n">get_newsnr_sgveto_psdvar</span></div>
 
 
 <div class="viewcode-block" id="PhaseTDExpFitStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDExpFitStatistic">[docs]</a><span class="k">class</span> <span class="nc">PhaseTDExpFitStatistic</span><span class="p">(</span><span class="n">PhaseTDStatistic</span><span class="p">,</span> <span class="n">ExpFitCombinedSNR</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot;Statistic combining exponential noise model with signal histogram PDF&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+    <span class="c1"># default is 2-ifo operation with exactly 1 &#39;phasetd&#39; file</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># read in both foreground PDF and background fit info</span>
-        <span class="n">ExpFitCombinedSNR</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+        <span class="n">ExpFitCombinedSNR</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="n">ifos</span><span class="p">)</span>
         <span class="c1"># need the self.single_dtype value from PhaseTDStatistic</span>
-        <span class="n">PhaseTDStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+        <span class="n">PhaseTDStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="n">ifos</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PhaseTDExpFitStatistic.single"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDExpFitStatistic.single">[docs]</a>    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigs</span><span class="p">):</span>
         <span class="c1"># same single-ifo stat as ExpFitCombinedSNR</span>
@@ -711,7 +817,7 @@
 
 <div class="viewcode-block" id="PhaseTDExpFitStatistic.coinc"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDExpFitStatistic.coinc">[docs]</a>    <span class="k">def</span> <span class="nf">coinc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
         <span class="c1"># logsignalrate function inherited from PhaseTDStatistic</span>
-        <span class="n">logr_s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logsignalrate</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+        <span class="n">logr_s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logsignalrate</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">slide</span> <span class="o">*</span> <span class="n">step</span><span class="p">)</span>
         <span class="c1"># rescale by ExpFitCombinedSNR reference slope as for sngl stat</span>
         <span class="n">cstat</span> <span class="o">=</span> <span class="n">s0</span><span class="p">[</span><span class="s1">&#39;snglstat&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">s1</span><span class="p">[</span><span class="s1">&#39;snglstat&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">logr_s</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpharef</span>
         <span class="c1"># cut off underflowing and very small values</span>
@@ -721,34 +827,33 @@
 
 
 <div class="viewcode-block" id="PhaseTDExpFitSGStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDExpFitSGStatistic">[docs]</a><span class="k">class</span> <span class="nc">PhaseTDExpFitSGStatistic</span><span class="p">(</span><span class="n">PhaseTDExpFitStatistic</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot;Statistic combining exponential noise model with signal histogram PDF</span>
-<span class="sd">       and adding the sine-Gaussian veto to the single detector ranking</span>
+
+<span class="sd">    adding the sine-Gaussian veto to the single detector ranking</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
-        <span class="n">PhaseTDExpFitStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">PhaseTDExpFitStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="n">ifos</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_newsnr</span> <span class="o">=</span> <span class="n">ranking</span><span class="o">.</span><span class="n">get_newsnr_sgveto</span></div>
 
 
 <div class="viewcode-block" id="PhaseTDExpFitSGPSDStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.PhaseTDExpFitSGPSDStatistic">[docs]</a><span class="k">class</span> <span class="nc">PhaseTDExpFitSGPSDStatistic</span><span class="p">(</span><span class="n">PhaseTDExpFitSGStatistic</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot;Statistic combining exponential noise model with signal histogram PDF</span>
-<span class="sd">       and adding the sine-Gaussian veto and PSD variation statistic to the</span>
-<span class="sd">       single detector ranking</span>
+
+<span class="sd">    adding the sine-Gaussian veto and PSD variation statistic to the</span>
+<span class="sd">    single detector ranking</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
-        <span class="n">PhaseTDExpFitSGStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">PhaseTDExpFitSGStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="n">ifos</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_newsnr</span> <span class="o">=</span> <span class="n">ranking</span><span class="o">.</span><span class="n">get_newsnr_sgveto_psdvar</span></div>
 
 
 <div class="viewcode-block" id="MaxContTradNewSNRStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.MaxContTradNewSNRStatistic">[docs]</a><span class="k">class</span> <span class="nc">MaxContTradNewSNRStatistic</span><span class="p">(</span><span class="n">NewSNRStatistic</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot;Combination of NewSNR with the power chisq and auto chisq&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MaxContTradNewSNRStatistic.single"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.MaxContTradNewSNRStatistic.single">[docs]</a>    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Calculate the single detector statistic.</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the single detector statistic.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -770,64 +875,68 @@
 
 
 <div class="viewcode-block" id="ExpFitSGBgRateStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitSGBgRateStatistic">[docs]</a><span class="k">class</span> <span class="nc">ExpFitSGBgRateStatistic</span><span class="p">(</span><span class="n">ExpFitStatistic</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot;Detection statistic using an exponential falloff noise model.</span>
+
 <span class="sd">    Statistic calculates the log noise coinc rate for each</span>
 <span class="sd">    template over single-ifo newsnr values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">benchmark_lograte</span><span class="o">=-</span><span class="mf">14.6</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">benchmark_lograte</span><span class="o">=-</span><span class="mf">14.6</span><span class="p">):</span>
         <span class="c1"># benchmark_lograte is log of a representative noise trigger rate</span>
         <span class="c1"># This comes from H1L1 (O2) and is 4.5e-7 Hz</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ExpFitSGBgRateStatistic</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ExpFitSGBgRateStatistic</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="n">ifos</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_lograte</span> <span class="o">=</span> <span class="n">benchmark_lograte</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_newsnr</span> <span class="o">=</span> <span class="n">ranking</span><span class="o">.</span><span class="n">get_newsnr_sgveto</span>
-        <span class="c1"># Reassign the rate as it is now number per time rather than an</span>
-        <span class="c1"># arbitrarily normalised number</span>
-        <span class="k">for</span> <span class="n">ifo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifos</span><span class="p">:</span>
+
+        <span class="c1"># Reassign the rate to be number per time rather than an arbitrarily</span>
+        <span class="c1"># normalised number</span>
+        <span class="k">for</span> <span class="n">ifo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bg_ifos</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">reassign_rate</span><span class="p">(</span><span class="n">ifo</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ExpFitSGBgRateStatistic.reassign_rate"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitSGBgRateStatistic.reassign_rate">[docs]</a>    <span class="k">def</span> <span class="nf">reassign_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ifo</span><span class="p">):</span>
         <span class="n">coeff_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">ifo</span><span class="o">+</span><span class="s1">&#39;-fit_coeffs&#39;</span><span class="p">]</span>
         <span class="n">template_id</span> <span class="o">=</span> <span class="n">coeff_file</span><span class="p">[</span><span class="s1">&#39;template_id&#39;</span><span class="p">][:]</span>
-        <span class="c1"># the template_ids and fit coeffs are stored in an arbitrary order</span>
-        <span class="c1"># create new arrays in template_id order for easier recall</span>
+        <span class="c1"># create arrays in template_id order for easier recall</span>
         <span class="n">tid_sort</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">template_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fits_by_tid</span><span class="p">[</span><span class="n">ifo</span><span class="p">][</span><span class="s1">&#39;rate&#39;</span><span class="p">]</span> <span class="o">=</span> \
             <span class="n">coeff_file</span><span class="p">[</span><span class="s1">&#39;count_above_thresh&#39;</span><span class="p">][:][</span><span class="n">tid_sort</span><span class="p">]</span> <span class="o">/</span> \
             <span class="nb">float</span><span class="p">(</span><span class="n">coeff_file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;analysis_time&#39;</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="ExpFitSGBgRateStatistic.coinc_multiifo"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitSGBgRateStatistic.coinc_multiifo">[docs]</a>    <span class="k">def</span> <span class="nf">coinc_multiifo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span>
-                       <span class="n">step</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># pylint:disable=unused-argument</span>
+<div class="viewcode-block" id="ExpFitSGBgRateStatistic.coinc_multiifo"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitSGBgRateStatistic.coinc_multiifo">[docs]</a>    <span class="k">def</span> <span class="nf">coinc_multiifo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">to_shift</span><span class="p">,</span>
+                       <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># pylint:disable=unused-argument</span>
         <span class="c1"># ranking statistic is -ln(expected rate density of noise triggers)</span>
         <span class="c1"># plus normalization constant</span>
+        <span class="n">sngl_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">sngl</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">sngl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">sngl</span> <span class="ow">in</span> <span class="n">s</span><span class="p">}</span>
         <span class="n">ln_noise_rate</span> <span class="o">=</span> <span class="n">coinc_rate</span><span class="o">.</span><span class="n">combination_noise_lograte</span><span class="p">(</span>
-                                  <span class="n">s</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;time_addition&#39;</span><span class="p">])</span>
+                                  <span class="n">sngl_dict</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;time_addition&#39;</span><span class="p">])</span>
         <span class="n">loglr</span> <span class="o">=</span> <span class="o">-</span> <span class="n">ln_noise_rate</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_lograte</span>
         <span class="k">return</span> <span class="n">loglr</span></div></div>
 
 
 <div class="viewcode-block" id="ExpFitSGFgBgRateStatistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitSGFgBgRateStatistic">[docs]</a><span class="k">class</span> <span class="nc">ExpFitSGFgBgRateStatistic</span><span class="p">(</span><span class="n">PhaseTDStatistic</span><span class="p">,</span> <span class="n">ExpFitSGBgRateStatistic</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
-        <span class="c1"># read in background fit info and store it, also use newsnr_sgveto</span>
-        <span class="n">ExpFitSGBgRateStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
-        <span class="c1"># Use PhaseTD statistic single.dtype</span>
-        <span class="n">PhaseTDStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">ifo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifos</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">assign_median_sigma</span><span class="p">(</span><span class="n">ifo</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># read in background fit info and store it</span>
+        <span class="n">ExpFitSGBgRateStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="n">ifos</span><span class="p">)</span>
+        <span class="c1"># if ifos not already set, determine via background fit info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ifos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifos</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">bg_ifos</span>
+        <span class="c1"># PhaseTD statistic single_dtype plus network sensitivity benchmark</span>
+        <span class="n">PhaseTDStatistic</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">ifos</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ifos</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">single_dtype</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;benchmark_logvol&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_newsnr</span> <span class="o">=</span> <span class="n">ranking</span><span class="o">.</span><span class="n">get_newsnr_sgveto</span>
+
+        <span class="k">for</span> <span class="n">ifo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bg_ifos</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assign_median_sigma</span><span class="p">(</span><span class="n">ifo</span><span class="p">)</span>
         <span class="c1"># benchmark_logvol is a benchmark sensitivity array over template id</span>
         <span class="n">hl_net_med_sigma</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">amin</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">fits_by_tid</span><span class="p">[</span><span class="n">ifo</span><span class="p">][</span><span class="s1">&#39;median_sigma&#39;</span><span class="p">]</span>
                                        <span class="k">for</span> <span class="n">ifo</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;H1&#39;</span><span class="p">,</span> <span class="s1">&#39;L1&#39;</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_logvol</span> <span class="o">=</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">hl_net_med_sigma</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">get_newsnr</span> <span class="o">=</span> <span class="n">ranking</span><span class="o">.</span><span class="n">get_newsnr_sgveto</span>
 
 <div class="viewcode-block" id="ExpFitSGFgBgRateStatistic.assign_median_sigma"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitSGFgBgRateStatistic.assign_median_sigma">[docs]</a>    <span class="k">def</span> <span class="nf">assign_median_sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ifo</span><span class="p">):</span>
-        <span class="n">coeff_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">ifo</span><span class="o">+</span><span class="s1">&#39;-fit_coeffs&#39;</span><span class="p">]</span>
+        <span class="n">coeff_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">ifo</span> <span class="o">+</span> <span class="s1">&#39;-fit_coeffs&#39;</span><span class="p">]</span>
         <span class="n">template_id</span> <span class="o">=</span> <span class="n">coeff_file</span><span class="p">[</span><span class="s1">&#39;template_id&#39;</span><span class="p">][:]</span>
         <span class="n">tid_sort</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">template_id</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">fits_by_tid</span><span class="p">[</span><span class="n">ifo</span><span class="p">][</span><span class="s1">&#39;median_sigma&#39;</span><span class="p">]</span> <span class="o">=</span> \
             <span class="n">coeff_file</span><span class="p">[</span><span class="s1">&#39;median_sigma&#39;</span><span class="p">][:][</span><span class="n">tid_sort</span><span class="p">]</span></div>
 
@@ -853,27 +962,40 @@
         <span class="n">singles</span><span class="p">[</span><span class="s1">&#39;benchmark_logvol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_logvol</span><span class="p">[</span><span class="n">tnum</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">singles</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExpFitSGFgBgRateStatistic.coinc_multiifo"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitSGFgBgRateStatistic.coinc_multiifo">[docs]</a>    <span class="k">def</span> <span class="nf">coinc_multiifo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span>
-                       <span class="n">step</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># pylint:disable=unused-argument</span>
-        <span class="n">sngl_rates</span> <span class="o">=</span> <span class="p">{</span><span class="n">ifo</span><span class="p">:</span> <span class="n">sngl_data</span><span class="p">[</span><span class="s1">&#39;snglstat&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ifo</span><span class="p">,</span> <span class="n">sngl_data</span> <span class="ow">in</span>
-                      <span class="n">s</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<div class="viewcode-block" id="ExpFitSGFgBgRateStatistic.coinc_multiifo"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.ExpFitSGFgBgRateStatistic.coinc_multiifo">[docs]</a>    <span class="k">def</span> <span class="nf">coinc_multiifo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">slide</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">to_shift</span><span class="p">,</span>
+                       <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># pylint:disable=unused-argument</span>
+        <span class="n">sngl_rates</span> <span class="o">=</span> <span class="p">{</span><span class="n">sngl</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">sngl</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;snglstat&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">sngl</span> <span class="ow">in</span> <span class="n">s</span><span class="p">}</span>
         <span class="n">ln_noise_rate</span> <span class="o">=</span> <span class="n">coinc_rate</span><span class="o">.</span><span class="n">combination_noise_lograte</span><span class="p">(</span>
                                   <span class="n">sngl_rates</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;time_addition&#39;</span><span class="p">])</span>
+        <span class="n">ln_noise_rate</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_lograte</span>
+
         <span class="c1"># Network sensitivity for a given coinc type is approximately</span>
         <span class="c1"># determined by the least sensitive ifo</span>
-        <span class="n">network_sigmasq</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">amin</span><span class="p">([</span><span class="n">s</span><span class="p">[</span><span class="n">ifo</span><span class="p">][</span><span class="s1">&#39;sigmasq&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ifo</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">keys</span><span class="p">()],</span>
+        <span class="n">network_sigmasq</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">amin</span><span class="p">([</span><span class="n">sngl</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;sigmasq&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">sngl</span> <span class="ow">in</span> <span class="n">s</span><span class="p">],</span>
                                      <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="c1"># Volume \propto sigma^3 or sigmasq^1.5</span>
         <span class="n">network_logvol</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">network_sigmasq</span><span class="p">)</span>
-
         <span class="c1"># Get benchmark log volume as single-ifo information</span>
-        <span class="c1"># NB, benchmark logvol for a given template is not ifo-dependent</span>
-        <span class="c1"># so choose one ifo for convenience</span>
-        <span class="n">ifos</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="n">benchmark_logvol</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">ifos</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s1">&#39;benchmark_logvol&#39;</span><span class="p">]</span>
+        <span class="c1"># NB benchmark logvol for a given template is not ifo-dependent</span>
+        <span class="c1"># - choose the first ifo for convenience</span>
+        <span class="n">benchmark_logvol</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;benchmark_logvol&#39;</span><span class="p">]</span>
+        <span class="n">network_logvol</span> <span class="o">-=</span> <span class="n">benchmark_logvol</span>
 
-        <span class="n">loglr</span> <span class="o">=</span> <span class="o">-</span> <span class="n">ln_noise_rate</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_lograte</span> \
-            <span class="o">+</span> <span class="n">network_logvol</span> <span class="o">-</span> <span class="n">benchmark_logvol</span>
+        <span class="n">coincifos</span> <span class="o">=</span> <span class="p">[</span><span class="n">sngl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sngl</span> <span class="ow">in</span> <span class="n">s</span><span class="p">]</span>
+        <span class="c1"># logsignalrate function from PhaseTDStatistic</span>
+        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;H1&#39;</span> <span class="ow">in</span> <span class="n">coincifos</span> <span class="ow">and</span> <span class="s1">&#39;L1&#39;</span> <span class="ow">in</span> <span class="n">coincifos</span><span class="p">):</span>
+            <span class="c1"># apply HL hist for HL &amp; HLV coincs, keep only H/L info</span>
+            <span class="n">s_hl</span> <span class="o">=</span> <span class="p">[</span><span class="n">sngl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">sngl</span> <span class="ow">in</span> <span class="n">s</span> <span class="k">if</span> <span class="n">sngl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;H1&#39;</span><span class="p">,</span> <span class="s1">&#39;L1&#39;</span><span class="p">]]</span>
+            <span class="n">shift_hl</span> <span class="o">=</span> <span class="p">[</span><span class="n">sh</span> <span class="k">for</span> <span class="n">sngl</span><span class="p">,</span> <span class="n">sh</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">to_shift</span><span class="p">)</span> <span class="k">if</span> \
+                        <span class="n">sngl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;H1&#39;</span><span class="p">,</span> <span class="s1">&#39;L1&#39;</span><span class="p">]]</span>
+            <span class="n">logr_s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logsignalrate_multiifo</span><span class="p">(</span><span class="n">s_hl</span><span class="p">,</span> <span class="n">slide</span> <span class="o">*</span> <span class="n">step</span><span class="p">,</span> <span class="n">shift_hl</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logr_s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logsignalrate_multiifo</span><span class="p">([</span><span class="n">sngl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">sngl</span> <span class="ow">in</span> <span class="n">s</span><span class="p">],</span>
+                                                 <span class="n">slide</span> <span class="o">*</span> <span class="n">step</span><span class="p">,</span> <span class="n">to_shift</span><span class="p">)</span>
+
+        <span class="n">loglr</span> <span class="o">=</span> <span class="n">logr_s</span> <span class="o">+</span> <span class="n">network_logvol</span> <span class="o">-</span> <span class="n">ln_noise_rate</span>
+        <span class="c1"># cut off underflowing and very small values</span>
+        <span class="n">loglr</span><span class="p">[</span><span class="n">loglr</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">30.</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">30.</span>
         <span class="k">return</span> <span class="n">loglr</span></div></div>
 
 
@@ -910,6 +1032,7 @@
     <span class="s1">&#39;exp_fit_sg_csnr_psdvar&#39;</span><span class="p">:</span> <span class="n">ExpFitSGPSDCombinedSNR</span>
 <span class="p">}</span>
 
+
 <div class="viewcode-block" id="get_statistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.get_statistic">[docs]</a><span class="k">def</span> <span class="nf">get_statistic</span><span class="p">(</span><span class="n">stat</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Error-handling sugar around dict lookup for coincident statistics</span>
@@ -933,6 +1056,7 @@
         <span class="k">return</span> <span class="n">statistic_dict</span><span class="p">[</span><span class="n">stat</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> is not an available detection statistic&#39;</span> <span class="o">%</span> <span class="n">stat</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="get_sngl_statistic"><a class="viewcode-back" href="../../../pycbc.events.html#pycbc.events.stat.get_sngl_statistic">[docs]</a><span class="k">def</span> <span class="nf">get_sngl_statistic</span><span class="p">(</span><span class="n">stat</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
