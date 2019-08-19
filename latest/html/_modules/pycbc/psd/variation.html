@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pycbc.psd.variation &mdash; PyCBC 1.14.dev2 documentation</title>
+  <title>pycbc.psd.variation &mdash; PyCBC 563f49 documentation</title>
   
 
   
@@ -60,6 +60,10 @@
 
           
             
+            
+              <div class="version">
+                None
+              </div>
             
           
 
@@ -575,13 +579,17 @@
 <span class="sd">    vals : Array</span>
 <span class="sd">        PSD variation value at a particular time</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="c1"># Find gps time of the trigger</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">idx</span> <span class="o">/</span> <span class="n">sample_rate</span>
     <span class="c1"># Extract the PSD variation at trigger time through linear</span>
     <span class="c1"># interpolation</span>
-    <span class="n">vals</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">psd_var</span><span class="o">.</span><span class="n">sample_times</span><span class="p">,</span> <span class="n">psd_var</span><span class="p">,</span>
-                        <span class="n">left</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">psd_var</span><span class="p">,</span> <span class="s1">&#39;cached_psd_var_interpolant&#39;</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">interpolate</span>
+        <span class="n">psd_var</span><span class="o">.</span><span class="n">cached_psd_var_interpolant</span> <span class="o">=</span> \
+            <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">psd_var</span><span class="o">.</span><span class="n">sample_times</span><span class="p">,</span> <span class="n">psd_var</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                 <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">psd_var</span><span class="o">.</span><span class="n">cached_psd_var_interpolant</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">vals</span></div>
 </pre></div>
 
