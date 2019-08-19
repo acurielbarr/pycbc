@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pycbc.strain.strain &mdash; PyCBC 1.14.dev2 documentation</title>
+  <title>pycbc.strain.strain &mdash; PyCBC cbfe01 documentation</title>
   
 
   
@@ -60,6 +60,10 @@
 
           
             
+            
+              <div class="version">
+                None
+              </div>
             
           
 
@@ -494,18 +498,23 @@
                      <span class="ow">and</span> <span class="p">(</span><span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">gp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">gp</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">strain</span><span class="o">.</span><span class="n">end_time</span><span class="p">)]</span>
 
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">autogating_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">glitch_times</span> <span class="o">=</span> <span class="n">detect_loud_glitches</span><span class="p">(</span>
-                    <span class="n">strain</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">autogating_threshold</span><span class="p">,</span>
-                    <span class="n">cluster_window</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">autogating_cluster</span><span class="p">,</span>
-                    <span class="n">low_freq_cutoff</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">strain_high_pass</span><span class="p">,</span>
-                    <span class="n">corrupt_time</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">pad_data</span> <span class="o">+</span> <span class="n">opt</span><span class="o">.</span><span class="n">autogating_pad</span><span class="p">)</span>
-            <span class="n">gate_params</span> <span class="o">=</span> <span class="p">[[</span><span class="n">gt</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">autogating_width</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">autogating_taper</span><span class="p">]</span> \
-                           <span class="k">for</span> <span class="n">gt</span> <span class="ow">in</span> <span class="n">glitch_times</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">glitch_times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Autogating at </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
-                             <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">gt</span> <span class="k">for</span> <span class="n">gt</span> <span class="ow">in</span> <span class="n">glitch_times</span><span class="p">]))</span>
-            <span class="n">strain</span> <span class="o">=</span> <span class="n">gate_data</span><span class="p">(</span><span class="n">strain</span><span class="p">,</span> <span class="n">gate_params</span><span class="p">)</span>
-            <span class="n">gating_info</span><span class="p">[</span><span class="s1">&#39;auto&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gate_params</span>
+            <span class="n">gating_info</span><span class="p">[</span><span class="s1">&#39;auto&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">autogating_max_iterations</span><span class="p">):</span>
+                <span class="n">glitch_times</span> <span class="o">=</span> <span class="n">detect_loud_glitches</span><span class="p">(</span>
+                        <span class="n">strain</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">autogating_threshold</span><span class="p">,</span>
+                        <span class="n">cluster_window</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">autogating_cluster</span><span class="p">,</span>
+                        <span class="n">low_freq_cutoff</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">strain_high_pass</span><span class="p">,</span>
+                        <span class="n">corrupt_time</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">pad_data</span> <span class="o">+</span> <span class="n">opt</span><span class="o">.</span><span class="n">autogating_pad</span><span class="p">)</span>
+                <span class="n">gate_params</span> <span class="o">=</span> <span class="p">[[</span><span class="n">gt</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">autogating_width</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">autogating_taper</span><span class="p">]</span>
+                               <span class="k">for</span> <span class="n">gt</span> <span class="ow">in</span> <span class="n">glitch_times</span><span class="p">]</span>
+                <span class="n">gating_info</span><span class="p">[</span><span class="s1">&#39;auto&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">gate_params</span>
+                <span class="n">strain</span> <span class="o">=</span> <span class="n">gate_data</span><span class="p">(</span><span class="n">strain</span><span class="p">,</span> <span class="n">gate_params</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">glitch_times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Autogating at </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">gt</span>
+                                            <span class="k">for</span> <span class="n">gt</span> <span class="ow">in</span> <span class="n">glitch_times</span><span class="p">]))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
 
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">strain_high_pass</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Highpass Filtering&quot;</span><span class="p">)</span>
@@ -747,6 +756,10 @@
                                          <span class="s1">&#39;producing a deviation larger than &#39;</span>
                                          <span class="s1">&#39;SIGMA in the whitened strain time &#39;</span>
                                          <span class="s1">&#39;series.&#39;</span><span class="p">)</span>
+    <span class="n">data_reading_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--autogating-max-iterations&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                                    <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;SIGMA&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If given, iteratively apply &#39;</span>
+                                         <span class="s1">&#39;autogating&#39;</span><span class="p">)</span>
     <span class="n">data_reading_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--autogating-cluster&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
                                     <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;SECONDS&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span>
                                     <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Length of clustering window for &#39;</span>
@@ -934,6 +947,10 @@
                                          <span class="s1">&#39;producing a deviation larger than &#39;</span>
                                          <span class="s1">&#39;SIGMA in the whitened strain time &#39;</span>
                                          <span class="s1">&#39;series.&#39;</span><span class="p">)</span>
+    <span class="n">data_reading_group_multi</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--autogating-max-iterations&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                                    <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;SIGMA&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If given, iteratively apply &#39;</span>
+                                         <span class="s1">&#39;autogating&#39;</span><span class="p">)</span>
     <span class="n">data_reading_group_multi</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--autogating-cluster&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
                                     <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">MultiDetOptionAction</span><span class="p">,</span>
                                     <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;IFO:SECONDS&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span>
@@ -1902,7 +1919,7 @@
     <p>
         &copy; Copyright 2015, 2016, 2017, Alexander Nitz, Ian Harry, Christopher M. Biwer, Duncan A.  Brown, Josh Willis, and Tito Dal Canton
       <span class="lastupdated">
-        Last updated on Aug 15, 2019.
+        Last updated on Aug 19, 2019.
       </span>
 
     </p>
