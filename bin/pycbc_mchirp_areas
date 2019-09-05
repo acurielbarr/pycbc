@@ -14,7 +14,17 @@ from scipy.integrate import quad
 #This script computes the area corresponding 
 #to different CBC on the m1 & m2 plane when  
 #given a central mchirp value and uncertainty
+#It also includes a function that calculates
+#the source frame when given the detector
+#frame mass and redshift
 #--------------------------------------------
+
+def src_mass_from_z_det_mass(z,del_z,mdet,del_mdet):
+
+    msrc=(mdet)/(1+z)
+    del_msrc=msrc*((del_mdet/mdet)**2+(del_z/(1+z))**2)**(0.5)
+
+    return (msrc,del_msrc)
 
 #Integration function
 
@@ -28,10 +38,13 @@ def intmc(mc,x_min,x_max):
     
     return integral[0]
 
-def calc_areas(trig_mc,mass_limits,mass_bdary):
+def calc_areas(trig_mc_det,mass_limits,mass_bdary,z):
 
-    mcb=trig_mc["central"]+trig_mc["delta"]
-    mcs=trig_mc["central"]-trig_mc["delta"]
+    trig_mc=src_mass_from_z_det_mass(z["central"],z["delta"],trig_mc_det["central"],trig_mc_det["delta"])
+
+    
+    mcb=trig_mc[0]+trig_mc[1]
+    mcs=trig_mc[0]-trig_mc[1]
 
     m2_min=mass_limits["min_m2"]
     m1_max=mass_limits["max_m1"]
